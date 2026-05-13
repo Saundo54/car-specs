@@ -1,0 +1,139 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.emptyContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px;
+  text-align: center;
+}
+
+.emptyContent span {
+  font-size: 64px;
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.5;
+}
+
+.tableWrapper {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  min-width: 100%;
+  width: max-content;
+}
+
+.stickyHeaderRow {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  background-color: var(--md-sys-color-surface-container-high);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.specRow {
+  display: flex;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.labelCell {
+  width: 120px;
+  padding: 12px 16px;
+  background-color: var(--md-sys-color-surface-container-lowest);
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+}
+
+.vehicleHeader {
+  width: 160px;
+  padding: 12px;
+  border-left: 1px solid var(--md-sys-color-outline-variant);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.removeButton {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.removeButton span {
+  font-size: 18px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.categoryRow {
+  display: flex;
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+.categoryLabel {
+  padding: 8px 16px;
+  font-weight: 500;
+  color: var(--md-sys-color-primary);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+}
+
+.valueCell {
+  width: 160px;
+  padding: 12px 16px;
+  border-left: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  align-items: center;
+}
+
+.toggleRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.better {
+  background-color: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.worse {
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+}
+
+.diff {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+@media (min-width: 600px) {
+  .labelCell { width: 160px; }
+  .vehicleHeader, .valueCell { width: 240px; }
+}

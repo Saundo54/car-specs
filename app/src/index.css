@@ -1,0 +1,55 @@
+:root {
+  font-family: 'Roboto', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+
+#root {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: inherit;
+  color: inherit;
+}
+
+/* Material You Utilities */
+.secondary-text {
+  color: var(--md-sys-color-on-surface-variant);
+}
+.surface-container {
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.surface-container-low {
+  background-color: var(--md-sys-color-surface-container-low);
+}
+
+.surface-container-high {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.title-large { font-family: 'Roboto Flex', sans-serif; font-size: 22px; font-weight: 400; }
+.headline-medium { font-family: 'Roboto Flex', sans-serif; font-size: 28px; font-weight: 400; }
+.display-medium { font-family: 'Roboto Flex', sans-serif; font-size: 45px; font-weight: 400; }
+.body-large { font-size: 16px; font-weight: 400; }
+.body-medium { font-size: 14px; font-weight: 400; }
+.label-medium { font-size: 12px; font-weight: 500; }

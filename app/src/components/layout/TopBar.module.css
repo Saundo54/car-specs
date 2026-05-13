@@ -1,0 +1,40 @@
+.topBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 4px;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.leading, .trailing {
+  display: flex;
+  align-items: center;
+  width: 48px;
+  justify-content: center;
+}
+
+.spacer {
+  width: 48px;
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconButton:active {
+  background-color: var(--md-sys-color-surface-container-high);
+}

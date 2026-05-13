@@ -1,0 +1,101 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: 80px; /* Space for bottom nav */
+}
+
+.navRail {
+  display: none;
+  width: 80px;
+  background-color: var(--md-sys-color-surface-container-low);
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0;
+  gap: 32px;
+}
+
+.railHeader {
+  color: var(--md-sys-color-primary);
+}
+
+.railLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.railItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--md-sys-color-on-surface-variant);
+  padding: 8px;
+  border-radius: 16px;
+  transition: background-color 0.2s;
+}
+
+.railItem.active {
+  color: var(--md-sys-color-on-secondary-container);
+  background-color: var(--md-sys-color-secondary-container);
+}
+
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background-color: var(--md-sys-color-surface-container);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 8px;
+  box-shadow: 0 -1px 4px rgba(0,0,0,0.05);
+}
+
+.bottomNavItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--md-sys-color-on-surface-variant);
+  flex: 1;
+}
+
+.iconContainer {
+  padding: 4px 20px;
+  border-radius: 16px;
+  transition: background-color 0.2s;
+}
+
+.bottomNavItem.active .iconContainer {
+  background-color: var(--md-sys-color-secondary-container);
+}
+
+.bottomNavItem.active {
+  color: var(--md-sys-color-on-surface);
+}
+
+@media (min-width: 840px) {
+  .navRail {
+    display: flex;
+  }
+  .bottomNav {
+    display: none;
+  }
+  .main {
+    padding-bottom: 0;
+  }
+}

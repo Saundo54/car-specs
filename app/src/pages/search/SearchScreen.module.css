@@ -1,0 +1,214 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.stickyHeader {
+  position: sticky;
+  top: 0;
+  background-color: var(--md-sys-color-surface);
+  z-index: 10;
+  padding: 8px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 1px solid var(--md-sys-color-surface-variant);
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  background-color: var(--md-sys-color-surface-container-high);
+  height: 56px;
+  border-radius: 28px;
+  padding: 0 8px 0 16px;
+  gap: 8px;
+}
+
+.searchIcon {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.searchInput {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--md-sys-color-on-surface);
+}
+
+.chipRow {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+.chipRow::-webkit-scrollbar {
+  display: none;
+}
+
+.contentArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.alphaList {
+  display: flex;
+  flex-direction: column;
+}
+
+.alphaGroup {
+  border-bottom: 1px solid var(--md-sys-color-surface-variant);
+}
+
+.alphaHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: var(--md-sys-color-surface-container);
+  border: none;
+  cursor: pointer;
+  color: var(--md-sys-color-on-surface);
+  transition: background-color 0.2s;
+}
+
+.alphaHeader:active {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.modelList {
+  background-color: var(--md-sys-color-surface-container-lowest);
+  display: flex;
+  flex-direction: column;
+}
+
+.modelHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: var(--md-sys-color-surface);
+  border: none;
+  border-bottom: 1px solid var(--md-sys-color-surface-variant);
+  cursor: pointer;
+  color: var(--md-sys-color-on-surface);
+}
+
+.modelHeaderContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.modelThumb {
+  width: 64px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.variantGrid {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--md-sys-color-surface);
+}
+
+.resultsMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.vehicleCard {
+  padding: 0;
+  overflow: hidden;
+  gap: 0;
+}
+
+.cardImageContainer {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  background-color: var(--md-sys-color-surface-container-highest);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cardContent {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.factRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 14px;
+}
+
+.dot {
+  opacity: 0.5;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.noResults {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 32px;
+  gap: 16px;
+  text-align: center;
+}
+
+.noResults span {
+  font-size: 48px;
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.5;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+}
