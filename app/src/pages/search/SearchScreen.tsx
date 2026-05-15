@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../../store/useAppStore';
-import { Card } from '../../components/ui/Card';
 import { Chip } from '../../components/ui/Chip';
 import { Button } from '../../components/ui/Button';
 import { IconButton } from '../../components/ui/IconButton';
 import { FilterBottomSheet } from './FilterBottomSheet';
+import { VariantOverlay } from './VariantOverlay';
+import { ShortlistBar } from './ShortlistBar';
+import { SplashScreen } from './SplashScreen';
+import { Snackbar } from '../../components/ui/Snackbar';
+import { useInteractionOrigin } from '../../hooks/useInteractionOrigin';
+import { SPRING_CONFIGS, ACCORDION_TRANSITIONS } from '../../constants/animations';
 import styles from './SearchScreen.module.css';
 
 export const SearchScreen: React.FC = () => {
   const navigate = useNavigate();
+  const { origin, captureOrigin } = useInteractionOrigin();
   const { 
     vehicles, 
     isLoading, 
@@ -18,7 +25,12 @@ export const SearchScreen: React.FC = () => {
     setSearchQuery, 
     filters, 
     addToComparison, 
-    comparisonList 
+    comparisonList,
+    clearFilters,
+    comparisonError,
+    setComparisonError,
+    hasEnteredApp,
+    resetApp
   } = useAppStore();
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [expandedAlpha, setExpandedAlpha] = useState<string | null>(null);
@@ -30,10 +42,14 @@ export const SearchScreen: React.FC = () => {
     if (vehicles.length === 0) {
       fetchVehicles();
     }
-  }, []);
+  }, [vehicles.length, fetchVehicles]);
+
+  useEffect(() => {
+    resetApp();
+  }, [resetApp]);
 
   const normalizeFuelType = (v: any) => {
-    const raw = v.fuel_type || (v.specs?.mechanical && (v.specs.mechanical['Fuel type'] || v.specs.mechanical['Fuel Type'])) || '';
+    const raw = v.fuel_type || v.specs?.mechanical?.['Fuel type'] || v.specs?.mechanical?.['Fuel Type'] || '';
     const lower = raw.toLowerCase();
     if (lower.includes('petrol')) return 'Petrol';
     if (lower.includes('diesel')) return 'Diesel';
@@ -43,19 +59,66 @@ export const SearchScreen: React.FC = () => {
   };
 
   const filteredVehicles = vehicles.filter(v => {
+    const mech = v.specs?.mechanical || {};
+
+    // Basic search matches
     const matchesSearch = 
       v.make.toLowerCase().includes(searchQuery.toLowerCase()) ||
       v.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
       v.year.toString().includes(searchQuery);
-    
-    const fuelType = normalizeFuelType(v);
-    const bodyType = v.body_type || 'Sedan';
+    if (!matchesSearch) return false;
 
-    const matchesBodyType = filters.bodyTypes.length === 0 || filters.bodyTypes.includes(bodyType);
-    const matchesFuelType = filters.fuelTypes.length === 0 || filters.fuelTypes.includes(fuelType);
+    // Year range
     const matchesYear = v.year >= filters.yearRange[0] && v.year <= filters.yearRange[1];
+    if (!matchesYear) return false;
 
-    return matchesSearch && matchesBodyType && matchesFuelType && matchesYear;
+    // Body type
+    if (filters.bodyTypes.length > 0 && !filters.bodyTypes.includes(v.body_type || 'Sedan')) return false;
+
+    // Fuel type
+    const fuelType = normalizeFuelType(v);
+    if (filters.fuelTypes.length > 0 && !filters.fuelTypes.includes(fuelType)) return false;
+
+    // Transmission - Check 'Gear Type'
+    const trans = mech['Gear Type'] || mech['Transmission'] || '';
+    if (filters.transmissions.length > 0) {
+      const isManual = trans.toLowerCase().includes('manual');
+      const isAuto = !isManual && (trans.toLowerCase().includes('auto') || trans.toLowerCase().includes('cvt') || trans.toLowerCase().includes('dual clutch') || trans.toLowerCase().includes('constantly variable'));
+      if (filters.transmissions.includes('Manual') && !isManual) return false;
+      if (filters.transmissions.includes('Automatic') && !isAuto) return false;
+    }
+
+    // Drive Type
+    const drive = mech['Drive'] || '';
+    if (filters.driveTypes.length > 0) {
+      const match = filters.driveTypes.some((dt: string) => {
+        if (dt === '4X4' || dt === '4x4') return drive.includes('4X4') || drive.includes('4x4') || drive.includes('4WD');
+        if (dt === '4X2' || dt === '4x2') return drive.includes('4X2') || drive.includes('4x2') || drive.includes('2WD');
+        return drive.toLowerCase().includes(dt.toLowerCase());
+      });
+      if (!match) return false;
+    }
+
+    // Cylinders
+    const cylStr = mech['Cylinders'] || '';
+    const cyl = parseInt(cylStr);
+    if (filters.cylinders.length > 0 && !filters.cylinders.includes(cyl)) return false;
+
+    // Power - Check 'Power' key
+    const powerStr = mech['Power'] || mech['Maximum Power'] || '';
+    const powerMatch = powerStr.match(/(\d+(\.\d+)?)/);
+    const power = powerMatch ? parseFloat(powerMatch[1]) : 0;
+    if (filters.powerRange[0] !== 'Any' && power < (filters.powerRange[0] as number)) return false;
+    if (filters.powerRange[1] !== 'Any' && power > (filters.powerRange[1] as number)) return false;
+
+    // Induction
+    const induction = mech['Induction'] || '';
+    if (filters.inductions.length > 0) {
+        const match = filters.inductions.some((ind: string) => induction.toLowerCase().includes(ind.toLowerCase()));
+        if (!match) return false;
+    }
+
+    return true;
   });
 
   // Top-level A-Z (Makes)
@@ -67,7 +130,6 @@ export const SearchScreen: React.FC = () => {
     return acc;
   }, {} as Record<string, string[]>);
 
-  // Helper to get models and their letters for a selected make
   const getModelAlphaGroups = (make: string) => {
     const makeVehicles = filteredVehicles.filter(v => v.make === make);
     return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').reduce((acc, letter) => {
@@ -83,8 +145,43 @@ export const SearchScreen: React.FC = () => {
     return <div className={styles.loading}>Loading vehicles...</div>;
   }
 
+  const listVariants = {
+    initial: (direction: number) => ({
+      x: direction > 0 ? '100%' : '-100%',
+      opacity: 0
+    }),
+    animate: {
+      x: 0,
+      opacity: 1,
+      transition: SPRING_CONFIGS.standard
+    },
+    exit: (direction: number) => ({
+      x: direction > 0 ? '-100%' : '100%',
+      opacity: 0,
+      transition: SPRING_CONFIGS.standard
+    })
+  };
+
+  const currentVariants = expandedModel 
+    ? filteredVehicles.filter(v => v.make === selectedMake && v.model === expandedModel)
+    : [];
+
+  const activeFilterCount = 
+    filters.bodyTypes.length + 
+    filters.fuelTypes.length + 
+    filters.transmissions.length + 
+    filters.driveTypes.length + 
+    filters.cylinders.length + 
+    filters.inductions.length +
+    (filters.yearRange[0] > 2018 || filters.yearRange[1] < 2025 ? 1 : 0) +
+    (filters.powerRange[0] !== 'Any' || filters.powerRange[1] !== 'Any' ? 1 : 0);
+
   return (
     <div className={styles.container}>
+      <AnimatePresence>
+        {!hasEnteredApp && <SplashScreen key="splash" />}
+      </AnimatePresence>
+
       <div className={styles.stickyHeader}>
         <div className={styles.searchBar}>
           <span className={`material-symbols-outlined ${styles.searchIcon}`}>search</span>
@@ -100,138 +197,170 @@ export const SearchScreen: React.FC = () => {
           />
           <IconButton icon="tune" onClick={() => setIsFilterSheetOpen(true)} />
         </div>
-        <div className={styles.chipRow}>
-          <Chip label="2018" selected icon="event" />
-          <Chip label="Body Type" selected={filters.bodyTypes.length > 0} icon="directions_car" onClick={() => setIsFilterSheetOpen(true)} />
-          <Chip label="Fuel Type" selected={filters.fuelTypes.length > 0} icon="ev_station" onClick={() => setIsFilterSheetOpen(true)} />
-        </div>
-      </div>
-
-      <div className={styles.contentArea}>
-        {filteredVehicles.length === 0 ? (
-          <div className={styles.noResults}>
-            <span className="material-symbols-outlined">search_off</span>
-            <h2 className="headline-small">No vehicles found</h2>
-            <p className="body-medium secondary-text">Try adjusting your filters or search query.</p>
-            <Button label="Clear all filters" variant="tonal" onClick={clearFilters} />
-          </div>
-        ) : selectedMake ? (
-          <div className={styles.alphaList}>
-            <div className={styles.resultsMeta}>
-              <Button label={`← Brands`} variant="text" onClick={() => setSelectedMake(null)} />
-              <span className="label-medium">{selectedMake}</span>
-            </div>
-            {Object.entries(getModelAlphaGroups(selectedMake)).map(([letter, models]) => (
-              <div key={letter} className={styles.alphaGroup}>
-                <button 
-                  className={styles.alphaHeader}
-                  onClick={() => setExpandedModelAlpha(expandedModelAlpha === letter ? null : letter)}
-                >
-                  <span className="title-medium">{letter}</span>
-                  <span className="material-symbols-outlined">
-                    {expandedModelAlpha === letter ? 'expand_less' : 'expand_more'}
-                  </span>
-                </button>
-                {expandedModelAlpha === letter && (
-                  <div className={styles.modelList}>
-                    {models.map(model => {
-                      const modelVariants = filteredVehicles.filter(v => v.make === selectedMake && v.model === model);
-                      const repImage = modelVariants.find(v => v.image)?.image;
-                      
-                      return (
-                        <div key={model} className={styles.modelGroup}>
-                          <button 
-                            className={styles.modelHeader}
-                            onClick={() => setExpandedModel(expandedModel === model ? null : model)}
-                          >
-                            <div className={styles.modelHeaderContent}>
-                              {repImage && <img src={repImage} className={styles.modelThumb} alt="" />}
-                              <span className="body-large">{model}</span>
-                            </div>
-                            <span className="material-symbols-outlined">
-                              {expandedModel === model ? 'expand_less' : 'expand_more'}
-                            </span>
-                          </button>
-                          
-                          {expandedModel === model && (
-                            <div className={styles.variantGrid}>
-                              {modelVariants.map(v => (
-                                <Card 
-                                  key={v.id} 
-                                  variant="outlined" 
-                                  onClick={() => navigate(`/vehicles/${v.id}`)}
-                                  className={styles.vehicleCard}
-                                >
-                                  {v.image && (
-                                    <div className={styles.cardImageContainer}>
-                                      <img src={v.image} alt={v.variant} className={styles.cardImage} />
-                                    </div>
-                                  )}
-                                  <div className={styles.cardContent}>
-                                    <h3 className="title-medium">{v.variant}</h3>
-                                    <div className={styles.factRow}>
-                                      <span className={`${styles.fact} secondary-text`}>{normalizeFuelType(v)}</span>
-                                      <span className={`${styles.dot} secondary-text`}>·</span>
-                                      <span className={`${styles.fact} secondary-text`}>{v.body_type || 'Sedan'}</span>
-                                    </div>
-
-                                    <div className={styles.cardActions}>
-                                      <Button 
-                                        label={comparisonList.includes(v.id) ? "Added" : "Compare +"} 
-                                        variant={comparisonList.includes(v.id) ? "tonal" : "outlined"}
-                                        onClick={(e) => { e.stopPropagation(); addToComparison(v.id); }}
-                                      />
-                                    </div>
-                                  </div>
-                                </Card>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className={styles.alphaList}>
-            {Object.entries(makeAlphaGroups).map(([letter, makes]) => (
-              <div key={letter} className={styles.alphaGroup}>
-                <button 
-                  className={styles.alphaHeader}
-                  onClick={() => setExpandedAlpha(expandedAlpha === letter ? null : letter)}
-                >
-                  <span className="title-large">{letter}</span>
-                  <span className="material-symbols-outlined">
-                    {expandedAlpha === letter ? 'expand_less' : 'expand_more'}
-                  </span>
-                </button>
-                {expandedAlpha === letter && (
-                  <div className={styles.makeList}>
-                    {makes.map(make => (
-                      <button 
-                        key={make} 
-                        className={styles.makeItem}
-                        onClick={() => setSelectedMake(make)}
-                      >
-                        <span className="body-large">{make}</span>
-                        <span className="material-symbols-outlined">chevron_right</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+        
+        {activeFilterCount > 0 && (
+          <div className={styles.chipRow}>
+            {(filters.yearRange[0] > 2018 || filters.yearRange[1] < 2025) && (
+              <Chip label={`${filters.yearRange[0]}-${filters.yearRange[1]}`} selected icon="event" onClick={() => setIsFilterSheetOpen(true)} />
+            )}
+            {filters.bodyTypes.map(t => <Chip key={t} label={t} selected icon="directions_car" onClick={() => setIsFilterSheetOpen(true)} />)}
+            {filters.fuelTypes.map(t => <Chip key={t} label={t} selected icon="ev_station" onClick={() => setIsFilterSheetOpen(true)} />)}
+            {filters.transmissions.map(t => <Chip key={t} label={t} selected icon="settings_input_component" onClick={() => setIsFilterSheetOpen(true)} />)}
+            {filters.driveTypes.map(t => <Chip key={t} label={t} selected icon="grid_view" onClick={() => setIsFilterSheetOpen(true)} />)}
+            {filters.powerRange[0] !== 'Any' || filters.powerRange[1] !== 'Any' ? (
+              <Chip label={`${filters.powerRange[0]}-${filters.powerRange[1]}kW`} selected icon="bolt" onClick={() => setIsFilterSheetOpen(true)} />
+            ) : null}
+            {activeFilterCount > 0 && <Button label="Clear All" variant="text" onClick={clearFilters} />}
           </div>
         )}
       </div>
+
+      <div className={styles.contentArea}>
+        <AnimatePresence mode="popLayout" initial={false} custom={selectedMake ? 1 : -1}>
+          {filteredVehicles.length === 0 ? (
+            <motion.div 
+              key="no-results"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={styles.noResults}
+            >
+              <span className="material-symbols-outlined">search_off</span>
+              <h2 className="headline-small">No vehicles found</h2>
+              <p className="body-medium secondary-text">Try adjusting your filters or search query.</p>
+              <Button label="Clear all filters" variant="tonal" onClick={clearFilters} />
+            </motion.div>
+          ) : selectedMake ? (
+            <motion.div 
+              key={`models-${selectedMake}`}
+              custom={1}
+              variants={listVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className={styles.alphaList}
+            >
+              <div className={styles.resultsMeta}>
+                <Button label={`← Brands`} variant="text" onClick={() => setSelectedMake(null)} />
+                <span className="label-medium">{selectedMake}</span>
+              </div>
+              {Object.entries(getModelAlphaGroups(selectedMake)).map(([letter, models]) => (
+                <div key={letter} className={styles.alphaGroup}>
+                  <button 
+                    className={styles.alphaHeader}
+                    onClick={() => setExpandedModelAlpha(expandedModelAlpha === letter ? null : letter)}
+                  >
+                    <span className="title-medium">{letter}</span>
+                    <span className="material-symbols-outlined">
+                      {expandedModelAlpha === letter ? 'expand_less' : 'expand_more'}
+                    </span>
+                  </button>
+                  <AnimatePresence>
+                    {expandedModelAlpha === letter && (
+                      <motion.div 
+                        {...ACCORDION_TRANSITIONS}
+                        style={{ overflow: 'hidden' }}
+                        className={styles.modelList}
+                      >
+                        {models.map(model => {
+                          const modelVariants = filteredVehicles.filter(v => v.make === selectedMake && v.model === model);
+                          const repImage = modelVariants.find(v => v.image)?.image;
+                          
+                          return (
+                            <div key={model} className={styles.modelGroup}>
+                              <button 
+                                className={styles.modelHeader}
+                                onClick={(e) => {
+                                  captureOrigin(e);
+                                  setExpandedModel(model);
+                                }}
+                              >
+                                <div className={styles.modelHeaderContent}>
+                                  {repImage && <img src={repImage} className={styles.modelThumb} alt="" />}
+                                  <span className="body-large">{model}</span>
+                                </div>
+                                <span className="material-symbols-outlined">chevron_right</span>
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="brands-list"
+              custom={-1}
+              variants={listVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className={styles.alphaList}
+            >
+              {Object.entries(makeAlphaGroups).map(([letter, makes]) => (
+                <div key={letter} className={styles.alphaGroup}>
+                  <button 
+                    className={styles.alphaHeader}
+                    onClick={() => setExpandedAlpha(expandedAlpha === letter ? null : letter)}
+                  >
+                    <span className="title-large">{letter}</span>
+                    <span className="material-symbols-outlined">
+                      {expandedAlpha === letter ? 'expand_less' : 'expand_more'}
+                    </span>
+                  </button>
+                  <AnimatePresence>
+                    {expandedAlpha === letter && (
+                      <motion.div 
+                        {...ACCORDION_TRANSITIONS}
+                        style={{ overflow: 'hidden' }}
+                        className={styles.makeList}
+                      >
+                        {makes.map(make => (
+                          <button 
+                            key={make} 
+                            className={styles.makeItem}
+                            onClick={() => setSelectedMake(make)}
+                          >
+                            <span className="body-large">{make}</span>
+                            <span className="material-symbols-outlined">chevron_right</span>
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <VariantOverlay 
+        isOpen={!!expandedModel}
+        onClose={() => setExpandedModel(null)}
+        origin={origin}
+        modelName={expandedModel || ''}
+        variants={currentVariants}
+        onVariantClick={(id) => navigate(`/vehicles/${id}`)}
+        onAddToCompare={(id, origin) => addToComparison(id, origin)}
+        comparisonList={comparisonList}
+      />
 
       <FilterBottomSheet 
         isOpen={isFilterSheetOpen} 
         onClose={() => setIsFilterSheetOpen(false)} 
         resultCount={filteredVehicles.length}
+      />
+
+      <ShortlistBar onCompare={() => navigate('/compare')} />
+
+      <Snackbar 
+        message={comparisonError || ''} 
+        isOpen={!!comparisonError} 
+        onClose={() => setComparisonError(null)} 
       />
     </div>
   );

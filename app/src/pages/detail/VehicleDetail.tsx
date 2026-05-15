@@ -1,17 +1,28 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../../store/useAppStore';
-import { MOCK_VEHICLES } from '../../data/vehicles';
 import { TopBar } from '../../components/layout/TopBar';
 import { Button } from '../../components/ui/Button';
 import { Chip } from '../../components/ui/Chip';
+import { Snackbar } from '../../components/ui/Snackbar';
+import { SPRING_CONFIGS } from '../../constants/animations';
 import styles from './VehicleDetail.module.css';
 
 export const VehicleDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { vehicles, comparisonList, addToComparison, toggleFavorite, favorites } = useAppStore();
+  const { 
+    vehicles, 
+    comparisonList, 
+    addToComparison, 
+    toggleFavorite, 
+    favorites,
+    comparisonError,
+    setComparisonError
+  } = useAppStore();
   const [activeTab, setActiveTab] = useState('mechanical');
+  const [direction, setDirection] = useState(0);
 
   const vehicle = vehicles.find(v => v.id === id);
 
@@ -34,6 +45,30 @@ export const VehicleDetail: React.FC = () => {
     { id: 'tech', label: 'Tech', icon: 'devices' },
     { id: 'interior', label: 'Interior', icon: 'chair' },
   ];
+
+  const handleTabChange = (tabId: string) => {
+    const currentIndex = tabs.findIndex(t => t.id === activeTab);
+    const nextIndex = tabs.findIndex(t => t.id === tabId);
+    setDirection(nextIndex > currentIndex ? 1 : -1);
+    setActiveTab(tabId);
+  };
+
+  const variants = {
+    initial: (direction: number) => ({
+      x: direction > 0 ? 100 : -100,
+      opacity: 0
+    }),
+    animate: {
+      x: 0,
+      opacity: 1,
+      transition: SPRING_CONFIGS.standard
+    },
+    exit: (direction: number) => ({
+      x: direction > 0 ? -100 : 100,
+      opacity: 0,
+      transition: SPRING_CONFIGS.standard
+    })
+  };
 
   return (
     <div className={styles.container}>
@@ -75,7 +110,7 @@ export const VehicleDetail: React.FC = () => {
               label={isCompared ? "Added to Compare" : "Add to Compare"} 
               variant={isCompared ? "tonal" : "outlined"}
               icon="compare_arrows"
-              onClick={() => addToComparison(vehicle.id)}
+              onClick={(e) => addToComparison(vehicle.id, { x: e.clientX, y: e.clientY })}
             />
             <Button label="View Source" variant="text" icon="open_in_new" />
           </div>
@@ -95,7 +130,7 @@ export const VehicleDetail: React.FC = () => {
               <button 
                 key={tab.id}
                 className={`${styles.tab} ${activeTab === tab.id ? styles.active : ''}`}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
               >
                 <span className="material-symbols-outlined">{tab.icon}</span>
                 <span className="label-medium">{tab.label}</span>
@@ -105,18 +140,36 @@ export const VehicleDetail: React.FC = () => {
         </div>
 
         {/* Spec Content */}
-        <div className={styles.specContent}>
-          <h2 className="title-large">{tabs.find(t => t.id === activeTab)?.label}</h2>
-          <div className={styles.specGrid}>
-            {Object.entries((vehicle.specs as any)[activeTab]).map(([label, value]) => (
-              <div key={label} className={styles.specRow}>
-                <span className="body-medium secondary-text">{label}</span>
-                <span className="body-large">{value as string}</span>
+        <div className={styles.specContentWrapper}>
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div 
+              key={activeTab}
+              custom={direction}
+              variants={variants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className={styles.specContent}
+            >
+              <h2 className="title-large">{tabs.find(t => t.id === activeTab)?.label}</h2>
+              <div className={styles.specGrid}>
+                {Object.entries((vehicle.specs as any)[activeTab]).map(([label, value]) => (
+                  <div key={label} className={styles.specRow}>
+                    <span className="body-medium secondary-text">{label}</span>
+                    <span className="body-large">{value as string}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
+
+      <Snackbar 
+        message={comparisonError || ''} 
+        isOpen={!!comparisonError} 
+        onClose={() => setComparisonError(null)} 
+      />
     </div>
   );
 };

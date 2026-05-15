@@ -12,6 +12,7 @@
   "dependencies": {
     "@material/material-color-utilities": "^0.4.0",
     "@material/web": "^2.4.1",
+    "framer-motion": "^12.38.0",
     "idb": "^8.0.3",
     "ky": "^2.0.2",
     "lucide-react": "^1.14.0",

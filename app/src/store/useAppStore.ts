@@ -5,6 +5,11 @@ interface FilterState {
   bodyTypes: string[];
   fuelTypes: string[];
   yearRange: [number, number];
+  transmissions: string[];
+  driveTypes: string[];
+  cylinders: number[];
+  powerRange: [number | 'Any', number | 'Any'];
+  inductions: string[];
 }
 
 interface AppState {
@@ -14,19 +19,27 @@ interface AppState {
   filters: FilterState;
   comparisonList: string[]; // vehicle IDs
   favorites: string[]; // vehicle IDs
+  lastAddedVehicle: { id: string, image: string, x: number, y: number } | null;
+  comparisonError: string | null;
+  hasEnteredApp: boolean; // For splash screen
 
   fetchVehicles: () => Promise<void>;
   setSearchQuery: (query: string) => void;
   setFilters: (filters: Partial<FilterState>) => void;
-  addToComparison: (id: string) => void;
+  addToComparison: (id: string, origin?: { x: number, y: number }) => void;
   removeFromComparison: (id: string) => void;
   toggleFavorite: (id: string) => void;
   clearFilters: () => void;
+  clearComparison: () => void;
+  setLastAddedVehicle: (v: { id: string, image: string, x: number, y: number } | null) => void;
+  setComparisonError: (error: string | null) => void;
+  enterApp: () => void;
+  resetApp: () => void;
 }
 
 export const useAppStore = create<AppState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       vehicles: [],
       isLoading: false,
       searchQuery: '',
@@ -34,9 +47,17 @@ export const useAppStore = create<AppState>()(
         bodyTypes: [],
         fuelTypes: [],
         yearRange: [2018, 2026],
+        transmissions: [],
+        driveTypes: [],
+        cylinders: [],
+        powerRange: ['Any', 'Any'],
+        inductions: [],
       },
       comparisonList: [],
       favorites: [],
+      lastAddedVehicle: null,
+      comparisonError: null,
+      hasEnteredApp: false,
 
       fetchVehicles: async () => {
         set({ isLoading: true });
@@ -56,11 +77,22 @@ export const useAppStore = create<AppState>()(
         filters: { ...state.filters, ...newFilters }
       })),
 
-      addToComparison: (id) => set((state) => {
-        if (state.comparisonList.includes(id)) return state;
-        if (state.comparisonList.length >= 3) return state; // UX limit
-        return { comparisonList: [...state.comparisonList, id] };
-      }),
+      addToComparison: (id, origin) => {
+        const state = get();
+        if (state.comparisonList.includes(id)) return;
+        
+        if (state.comparisonList.length >= 3) {
+          set({ comparisonError: 'Comparison limit reached (max 3 vehicles)' });
+          return;
+        }
+
+        const vehicle = state.vehicles.find(v => v.id === id);
+        if (vehicle && origin) {
+          set({ lastAddedVehicle: { id, image: vehicle.image, ...origin } });
+        }
+
+        set((state) => ({ comparisonList: [...state.comparisonList, id] }));
+      },
 
       removeFromComparison: (id) => set((state) => ({
         comparisonList: state.comparisonList.filter((cid) => cid !== id)
@@ -77,11 +109,31 @@ export const useAppStore = create<AppState>()(
           bodyTypes: [],
           fuelTypes: [],
           yearRange: [2018, 2026],
+          transmissions: [],
+          driveTypes: [],
+          cylinders: [],
+          powerRange: ['Any', 'Any'],
+          inductions: [],
         }
       }),
+
+      clearComparison: () => set({ comparisonList: [] }),
+
+      setLastAddedVehicle: (v) => set({ lastAddedVehicle: v }),
+
+      setComparisonError: (error) => set({ comparisonError: error }),
+
+      enterApp: () => set({ hasEnteredApp: true }),
+
+      resetApp: () => set({ hasEnteredApp: false }),
     }),
     {
       name: 'carspec-storage',
+      partialize: (state) => ({
+        comparisonList: state.comparisonList,
+        favorites: state.favorites,
+        filters: state.filters,
+      }),
     }
   )
 );

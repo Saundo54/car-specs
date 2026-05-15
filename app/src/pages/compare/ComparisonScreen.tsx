@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { MOCK_VEHICLES } from '../../data/vehicles';
 import { TopBar } from '../../components/layout/TopBar';
 import { Button } from '../../components/ui/Button';
 import styles from './ComparisonScreen.module.css';
@@ -8,10 +7,11 @@ import styles from './ComparisonScreen.module.css';
 export const ComparisonScreen: React.FC = () => {
   const { vehicles, comparisonList, removeFromComparison } = useAppStore();
   const [showDifferencesOnly, setShowDifferencesOnly] = useState(false);
+  const [activeTab, setActiveTab] = useState('mechanical');
 
   const comparedVehicles = vehicles.filter(v => comparisonList.includes(v.id));
 
-  const specCategories = [
+  const tabs = [
     { id: 'mechanical', label: 'Mechanical' },
     { id: 'dimensions', label: 'Dimensions' },
     { id: 'safety', label: 'Safety' },
@@ -32,15 +32,17 @@ export const ComparisonScreen: React.FC = () => {
     );
   }
 
-  // Helper to check if a row has differences
+  // Helper to check if a row has differences relative to the base case (Vehicle 1)
   const hasDifference = (category: string, key: string) => {
     if (comparedVehicles.length < 2) return false;
-    const values = comparedVehicles.map(v => (v.specs as any)[category][key]);
-    return !values.every(val => val === values[0]);
+    const baseValue = (comparedVehicles[0].specs as any)[category][key];
+    const otherValues = comparedVehicles.slice(1).map(v => (v.specs as any)[category][key]);
+    return otherValues.some(val => val !== baseValue);
   };
 
-  // Helper to determine highlight color
-  const getHighlight = (category: string, key: string, value: string) => {
+  // Helper to determine highlight color relative to base case
+  const getHighlight = (category: string, key: string, value: string, index: number) => {
+    if (index === 0) return ''; // Base case never highlighted as "different"
     if (!hasDifference(category, key)) return '';
     if (!value) return '';
     
@@ -73,6 +75,21 @@ export const ComparisonScreen: React.FC = () => {
     <div className={styles.container}>
       <TopBar title="Compare" actions={<Button label="Add" variant="text" icon="add" />} />
 
+      {/* Tabs */}
+      <div className={styles.tabsContainer}>
+        <div className={styles.tabRow}>
+          {tabs.map(tab => (
+            <button 
+              key={tab.id}
+              className={`${styles.tab} ${activeTab === tab.id ? styles.active : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="label-medium">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className={styles.tableWrapper}>
         <div className={styles.grid}>
           {/* Header Row */}
@@ -87,9 +104,12 @@ export const ComparisonScreen: React.FC = () => {
                 />
               </div>
             </div>
-            {comparedVehicles.map(v => (
+            {comparedVehicles.map((v, index) => (
               <div key={v.id} className={styles.vehicleHeader}>
-                <h3 className="label-large">{v.make} {v.model}</h3>
+                <div className={styles.headerTop}>
+                  <h3 className="label-large">{v.make} {v.model}</h3>
+                  {index === 0 && <span className={`${styles.baseBadge} label-small`}>Base Case</span>}
+                </div>
                 <p className="label-small secondary-text">{v.variant}</p>
                 <button 
                   className={styles.removeButton} 
@@ -101,40 +121,36 @@ export const ComparisonScreen: React.FC = () => {
             ))}
           </div>
 
-          {/* Spec Categories */}
-          {specCategories.map(cat => {
+          {/* Spec Content for Active Tab */}
+          {(() => {
+            const cat = tabs.find(t => t.id === activeTab)!;
             const keys = [...new Set(comparedVehicles.flatMap(v => Object.keys((v.specs as any)[cat.id] || {})))];
-            if (keys.length === 0) return null;
-
-            return (
-              <React.Fragment key={cat.id}>
-                <div className={styles.categoryRow}>
-                  <div className={styles.categoryLabel}>{cat.label}</div>
-                </div>
-                
-                {keys.map(key => {
-                  const different = hasDifference(cat.id, key);
-                  if (showDifferencesOnly && !different) return null;
-
-                  return (
-                    <div key={key} className={styles.specRow}>
-                      <div className={styles.labelCell}>
-                        <span className="body-medium secondary-text">{key}</span>
-                      </div>
-                      {comparedVehicles.map(v => {
-                        const val = (v.specs as any)[cat.id][key] || '-';
-                        return (
-                          <div key={v.id} className={`${styles.valueCell} ${getHighlight(cat.id, key, val)}`}>
-                            <span className="body-large">{val}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })}
-              </React.Fragment>
+            
+            if (keys.length === 0) return (
+              <div className={styles.noData}>No specifications for this category.</div>
             );
-          })}
+
+            return keys.map(key => {
+              const different = hasDifference(cat.id, key);
+              if (showDifferencesOnly && !different) return null;
+
+              return (
+                <div key={key} className={styles.specRow}>
+                  <div className={styles.labelCell}>
+                    <span className="body-medium secondary-text">{key}</span>
+                  </div>
+                  {comparedVehicles.map((v, idx) => {
+                    const val = (v.specs as any)[cat.id][key] || '-';
+                    return (
+                      <div key={v.id} className={`${styles.valueCell} ${getHighlight(cat.id, key, val, idx)}`}>
+                        <span className="body-large">{val}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            });
+          })()}
         </div>
       </div>
     </div>

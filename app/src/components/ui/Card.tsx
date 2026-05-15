@@ -4,7 +4,7 @@ import styles from './Card.module.css';
 interface CardProps {
   children: React.ReactNode;
   variant?: 'filled' | 'outlined' | 'elevated';
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
   className?: string;
 }
 
