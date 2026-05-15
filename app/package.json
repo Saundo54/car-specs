@@ -22,6 +22,7 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
+    "@aws-amplify/backend-cli": "^1.8.2",
     "@eslint/js": "^10.0.1",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
