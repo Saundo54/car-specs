@@ -47,7 +47,7 @@ export const handler = async (event: any) => {
       // Note: We use batches to be efficient, and the SQS visibility timeout/drip-feed
       // handles the overall rate limiting.
       for (let i = 0; i < variantUrls.length; i += 10) {
-        const batch = variantUrls.slice(i, i + 10).map((url, index) => ({
+        const batch = variantUrls.slice(i, i + 10).map((url: string, index: number) => ({
           Id: `msg-${i}-${index}`,
           MessageBody: url,
         }));
