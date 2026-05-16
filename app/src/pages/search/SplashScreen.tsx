@@ -6,7 +6,7 @@ import styles from './SplashScreen.module.css';
 
 export const SplashScreen: React.FC = () => {
   const enterApp = useAppStore(state => state.enterApp);
-  const [isDark, setIsDark] = useState<boolean>(() => typeof window !== 'undefined' and window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const [isDark, setIsDark] = useState<boolean>(() => typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
