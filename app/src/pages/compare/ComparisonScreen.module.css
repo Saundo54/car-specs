@@ -31,6 +31,7 @@
   flex: 1;
   overflow-x: auto;
   overflow-y: auto;
+  touch-action: pan-y;
 }
 
 .grid {
@@ -170,7 +171,7 @@
   width: 16px;
   height: 16px;
   border-radius: 4px;
-  background-color: var(--md-sys-color-tertiary-container);
+  background-color: var(--md-sys-color-success-container, #e6f4ea);
 }
 
 .legendNotice {
@@ -244,8 +245,8 @@
 }
 
 .better {
-  background-color: var(--md-sys-color-tertiary-container);
-  color: var(--md-sys-color-on-tertiary-container);
+  background-color: var(--md-sys-color-success-container, #e6f4ea);
+  color: var(--md-sys-color-on-success-container, #137333);
 }
 
 .worse {

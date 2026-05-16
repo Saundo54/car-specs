@@ -8,6 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: false,
       includeAssets: ['favicon.svg', 'icons.svg', 'data/vehicles.json', 'images/logo/brands/*.svg'],
       manifest: {
         name: 'CarSpec — Vehicle Specifications',
@@ -16,15 +17,17 @@ export default defineConfig({
         theme_color: '#1565C0',
         background_color: '#111318',
         display: 'standalone',
+        scope: '/',
+        start_url: '/',
         icons: [
           {
             src: 'favicon.svg',
-            sizes: '48x46',
+            sizes: 'any',
             type: 'image/svg+xml'
           },
           {
             src: 'favicon.svg',
-            sizes: '48x46',
+            sizes: 'any',
             type: 'image/svg+xml',
             purpose: 'any maskable'
           }

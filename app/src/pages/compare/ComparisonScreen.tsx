@@ -40,6 +40,10 @@ export const ComparisonScreen: React.FC = () => {
     }
   };
 
+  const handlePointerCancel = () => {
+    setTouchStartX(null);
+  };
+
   const hasDifference = (category: string, key: string) => {
     if (comparedVehicles.length < 2) return false;
     const baseValue = (comparedVehicles[0].specs as any)[category][key];
@@ -153,7 +157,7 @@ export const ComparisonScreen: React.FC = () => {
         </div>
       )}
 
-      <div className={styles.tableWrapper} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
+      <div className={styles.tableWrapper} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onPointerCancel={handlePointerCancel}>
         <div className={styles.grid}>
           {/* Header Row */}
           <div className={styles.stickyHeaderRow}>

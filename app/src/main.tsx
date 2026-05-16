@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { initializeTheme } from './theme'
+import './registerSW'
 // import { Amplify } from 'aws-amplify'
 // import amplifyconfig from '../amplify_outputs.json'
 

@@ -73,6 +73,10 @@ export const VehicleDetail: React.FC = () => {
     }
   };
 
+  const handlePointerCancel = () => {
+    setTouchStartX(null);
+  };
+
   const variants = {
     initial: (direction: number) => ({
       x: direction > 0 ? 100 : -100,
@@ -160,7 +164,7 @@ export const VehicleDetail: React.FC = () => {
         </div>
 
         {/* Spec Content */}
-        <div className={styles.specContentWrapper} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
+        <div className={styles.specContentWrapper} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onPointerCancel={handlePointerCancel}>
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div 
               key={activeTab}

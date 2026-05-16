@@ -107,6 +107,7 @@
   overflow: hidden;
   position: relative;
   flex: 1;
+  touch-action: pan-y;
 }
 
 .specContent {
