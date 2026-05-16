@@ -26,8 +26,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* subtle radial wash to ground the logo */
-  background: radial-gradient(circle at 50% 65%, rgba(0,0,0,0.03), transparent 35%);
 }
 
 .logoImage {
@@ -36,8 +34,8 @@
   width: auto;
   height: auto;
   object-fit: contain;
-  /* softer shadow to avoid floating look */
-  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.12));
+  /* remove shadow on image edges to avoid haloing */
+  filter: none;
 }
 
 .footer {

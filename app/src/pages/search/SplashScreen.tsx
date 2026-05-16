@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '../../store/useAppStore';
 import { Button } from '../../components/ui/Button';
@@ -6,10 +6,18 @@ import styles from './SplashScreen.module.css';
 
 export const SplashScreen: React.FC = () => {
   const enterApp = useAppStore(state => state.enterApp);
+  const [isDark, setIsDark] = useState<boolean>(() => typeof window !== 'undefined' and window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = (e: MediaQueryListEvent) => setIsDark(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
   // Use a transparent PNG so the logo blends with the page background
   // Transparent asset covers both light and dark backgrounds and avoids a white box
-  const logoSrc = '/images/logo/splash_logo_transparent.png';
+  const logoSrc = isDark ? '/images/logo/splash_logo_black.png' : '/images/logo/splash_logo_white.png';
 
   return (
     <div className={styles.container}>
