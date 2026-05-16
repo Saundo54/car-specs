@@ -23,6 +23,7 @@ export const VehicleDetail: React.FC = () => {
   } = useAppStore();
   const [activeTab, setActiveTab] = useState('mechanical');
   const [direction, setDirection] = useState(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
   const vehicle = vehicles.find(v => v.id === id);
 
@@ -51,6 +52,25 @@ export const VehicleDetail: React.FC = () => {
     const nextIndex = tabs.findIndex(t => t.id === tabId);
     setDirection(nextIndex > currentIndex ? 1 : -1);
     setActiveTab(tabId);
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    setTouchStartX(event.clientX);
+  };
+
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (touchStartX === null) return;
+    const deltaX = event.clientX - touchStartX;
+    setTouchStartX(null);
+
+    const currentIndex = tabs.findIndex(t => t.id === activeTab);
+    if (Math.abs(deltaX) < 60) return;
+    if (deltaX < 0 && currentIndex < tabs.length - 1) {
+      handleTabChange(tabs[currentIndex + 1].id);
+    }
+    if (deltaX > 0 && currentIndex > 0) {
+      handleTabChange(tabs[currentIndex - 1].id);
+    }
   };
 
   const variants = {
@@ -140,7 +160,7 @@ export const VehicleDetail: React.FC = () => {
         </div>
 
         {/* Spec Content */}
-        <div className={styles.specContentWrapper}>
+        <div className={styles.specContentWrapper} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div 
               key={activeTab}

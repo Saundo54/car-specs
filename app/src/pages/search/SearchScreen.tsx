@@ -14,6 +14,17 @@ import { useInteractionOrigin } from '../../hooks/useInteractionOrigin';
 import { SPRING_CONFIGS, ACCORDION_TRANSITIONS } from '../../constants/animations';
 import styles from './SearchScreen.module.css';
 
+const brandLogos: Record<string, string> = {
+  audi: '/images/logo/brands/audi.svg',
+  ford: '/images/logo/brands/ford.svg',
+  honda: '/images/logo/brands/honda.svg',
+  hyundai: '/images/logo/brands/hyundai.svg',
+  kia: '/images/logo/brands/kia.svg',
+  mazda: '/images/logo/brands/mazda.svg',
+  toyota: '/images/logo/brands/toyota.svg',
+  volkswagen: '/images/logo/brands/volkswagen.svg',
+};
+
 export const SearchScreen: React.FC = () => {
   const navigate = useNavigate();
   const { origin, captureOrigin } = useInteractionOrigin();
@@ -318,16 +329,32 @@ export const SearchScreen: React.FC = () => {
                         style={{ overflow: 'hidden' }}
                         className={styles.makeList}
                       >
-                        {makes.map(make => (
-                          <button 
-                            key={make} 
-                            className={styles.makeItem}
-                            onClick={() => setSelectedMake(make)}
-                          >
-                            <span className="body-large">{make}</span>
-                            <span className="material-symbols-outlined">chevron_right</span>
-                          </button>
-                        ))}
+                        <div className={styles.brandGrid}>
+                          {makes.map(make => {
+                            const makeCount = filteredVehicles.filter(v => v.make === make).length;
+                            const logoSrc = brandLogos[make.toLowerCase()] || '/images/logo/splash_logo_transparent.png';
+
+                            return (
+                              <button
+                                key={make}
+                                className={styles.brandCard}
+                                onClick={() => setSelectedMake(make)}
+                              >
+                                <div className={styles.brandLogoWrapper}>
+                                  <img
+                                    src={logoSrc}
+                                    alt={`${make} logo`}
+                                    className={styles.brandLogo}
+                                  />
+                                </div>
+                                <div className={styles.brandCardBody}>
+                                  <span className="title-small">{make}</span>
+                                  <span className="body-small secondary-text">{makeCount} models</span>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>

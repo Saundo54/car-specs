@@ -8,6 +8,8 @@ export const ComparisonScreen: React.FC = () => {
   const { vehicles, comparisonList, removeFromComparison } = useAppStore();
   const [showDifferencesOnly, setShowDifferencesOnly] = useState(false);
   const [activeTab, setActiveTab] = useState('mechanical');
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [showLegend, setShowLegend] = useState(false);
 
   const comparedVehicles = vehicles.filter(v => comparisonList.includes(v.id));
 
@@ -18,6 +20,40 @@ export const ComparisonScreen: React.FC = () => {
     { id: 'tech', label: 'Tech' },
     { id: 'interior', label: 'Interior' },
   ];
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    setTouchStartX(event.clientX);
+  };
+
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (touchStartX === null) return;
+    const deltaX = event.clientX - touchStartX;
+    setTouchStartX(null);
+
+    const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
+    if (Math.abs(deltaX) < 60) return;
+    if (deltaX < 0 && currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1].id);
+    }
+    if (deltaX > 0 && currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1].id);
+    }
+  };
+
+  const hasDifference = (category: string, key: string) => {
+    if (comparedVehicles.length < 2) return false;
+    const baseValue = (comparedVehicles[0].specs as any)[category][key];
+    const otherValues = comparedVehicles.slice(1).map(v => (v.specs as any)[category][key]);
+    return otherValues.some(val => val !== baseValue);
+  };
+
+  const getCurrentKeys = () => {
+    return [...new Set(comparedVehicles.flatMap(v => Object.keys((v.specs as any)[activeTab] || {})))];
+  };
+
+  const currentKeys = getCurrentKeys();
+  const differentCount = currentKeys.filter(key => hasDifference(activeTab, key)).length;
+  const sameCount = currentKeys.length - differentCount;
 
   if (comparedVehicles.length === 0) {
     return (
@@ -73,7 +109,17 @@ export const ComparisonScreen: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <TopBar title="Compare" actions={<Button label="Add" variant="text" icon="add" />} />
+      <TopBar
+        title="Compare"
+        actions={
+          <div className={styles.topActions}>
+            <button className={styles.infoButton} onClick={() => setShowLegend(!showLegend)}>
+              <span className="material-symbols-outlined">info</span>
+            </button>
+            <Button label="Add" variant="text" icon="add" />
+          </div>
+        }
+      />
 
       {/* Tabs */}
       <div className={styles.tabsContainer}>
@@ -90,7 +136,32 @@ export const ComparisonScreen: React.FC = () => {
         </div>
       </div>
 
-      <div className={styles.tableWrapper}>
+      <div className={styles.compareSummary}>
+        <span className="label-small">{currentKeys.length} specs — {differentCount} difference{differentCount === 1 ? '' : 's'}, {sameCount} match{sameCount === 1 ? '' : 'es'}</span>
+      </div>
+
+      {showLegend && (
+        <div className={styles.legendCard}>
+          <div className={styles.legendRow}>
+            <span className={styles.legendSwatch} />
+            <span>Green: Best value among the compared vehicles where higher is better.</span>
+          </div>
+          <div className={styles.legendRow}>
+            <span className={`${styles.legendSwatch} ${styles.worse}`} />
+            <span>Red: Worse value than the base vehicle or poorer performance where higher is better.</span>
+          </div>
+          <div className={styles.legendRow}>
+            <span className={`${styles.legendSwatch} ${styles.diff}`} />
+            <span>Blue: This value differs from the first vehicle in the current comparison (the base case).</span>
+          </div>
+          <div className={styles.legendRow}>
+            <span className={styles.legendNotice} />
+            <span>The first listed vehicle in the comparison is treated as the base case.</span>
+          </div>
+        </div>
+      )}
+
+      <div className={styles.tableWrapper} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
         <div className={styles.grid}>
           {/* Header Row */}
           <div className={styles.stickyHeaderRow}>

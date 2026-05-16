@@ -1,0 +1,21 @@
+{
+  "name": "CarSpec — Vehicle Specifications",
+  "short_name": "CarSpec",
+  "description": "Research and compare vehicle specifications",
+  "theme_color": "#1565C0",
+  "background_color": "#111318",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "48x46",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "48x46",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

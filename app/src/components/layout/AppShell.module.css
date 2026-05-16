@@ -25,6 +25,25 @@
 
 .railHeader {
   color: var(--md-sys-color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+}
+
+.themeButton {
+  background: none;
+  border: none;
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.themeButton:hover {
+  background-color: rgba(255,255,255,0.08);
 }
 
 .railLinks {
@@ -86,6 +105,16 @@
 
 .bottomNavItem.active {
   color: var(--md-sys-color-on-surface);
+}
+
+.onlineBadge {
+  margin-top: auto;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 11px;
+  text-transform: uppercase;
 }
 
 @media (min-width: 840px) {
