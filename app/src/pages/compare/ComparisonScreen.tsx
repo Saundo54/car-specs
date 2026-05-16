@@ -68,14 +68,6 @@ export const ComparisonScreen: React.FC = () => {
     );
   }
 
-  // Helper to check if a row has differences relative to the base case (Vehicle 1)
-  const hasDifference = (category: string, key: string) => {
-    if (comparedVehicles.length < 2) return false;
-    const baseValue = (comparedVehicles[0].specs as any)[category][key];
-    const otherValues = comparedVehicles.slice(1).map(v => (v.specs as any)[category][key]);
-    return otherValues.some(val => val !== baseValue);
-  };
-
   // Helper to determine highlight color relative to base case
   const getHighlight = (category: string, key: string, value: string, index: number) => {
     if (index === 0) return ''; // Base case never highlighted as "different"
