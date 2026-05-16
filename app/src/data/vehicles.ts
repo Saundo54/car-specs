@@ -9,6 +9,7 @@ export interface VehicleSpec {
   drivetrain: string;
   seats: number;
   ancap_rating: number;
+  ancap_test_year?: number;
   specs: {
     mechanical: Record<string, string>;
     dimensions: Record<string, string>;
@@ -30,6 +31,7 @@ export const MOCK_VEHICLES: VehicleSpec[] = [
     drivetrain: "FWD",
     seats: 5,
     ancap_rating: 5,
+    ancap_test_year: 2019,
     specs: {
       mechanical: {
         "Engine": "1.8L 4-cylinder Hybrid",
@@ -71,6 +73,7 @@ export const MOCK_VEHICLES: VehicleSpec[] = [
     drivetrain: "FWD",
     seats: 5,
     ancap_rating: 5,
+    ancap_test_year: 2012,
     specs: {
       mechanical: {
         "Engine": "2.5L 4-cylinder Turbo",
@@ -112,6 +115,7 @@ export const MOCK_VEHICLES: VehicleSpec[] = [
     drivetrain: "FWD",
     seats: 5,
     ancap_rating: 5,
+    ancap_test_year: 2024,
     specs: {
       mechanical: {
         "Engine": "2.5L 4-cylinder Hybrid",

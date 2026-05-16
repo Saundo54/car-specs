@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-01-01T00:00:00Z",
+  "entries": [
+    {
+      "term": "Torque Converter",
+      "explanation": "A fluid coupling device that transfers power from the engine to the transmission in automatic vehicles",
+      "practicalBenefit": "Provides smooth acceleration without the need for a manual clutch, making city driving easier",
+      "category": "mechanical"
+    },
+    {
+      "term": "Regenerative Braking",
+      "explanation": "A system that captures energy normally lost during braking and converts it back into electricity to recharge the battery",
+      "practicalBenefit": "Extends driving range in hybrid and electric vehicles while reducing brake wear",
+      "category": "mechanical"
+    },
+    {
+      "term": "ADAS",
+      "explanation": "Advanced Driver Assistance Systems - a collection of safety technologies that help prevent accidents",
+      "practicalBenefit": "Features like automatic emergency braking and lane keeping assist reduce driver fatigue and improve safety",
+      "category": "safety",
+      "aliases": ["Advanced Driver Assistance Systems"]
+    },
+    {
+      "term": "DOHC",
+      "explanation": "Double Overhead Camshaft - an engine design with two camshafts per cylinder bank for better valve control",
+      "practicalBenefit": "Allows the engine to breathe more efficiently, resulting in better performance and fuel economy",
+      "category": "mechanical",
+      "aliases": ["Double Overhead Camshaft"]
+    },
+    {
+      "term": "VVT",
+      "explanation": "Variable Valve Timing - technology that adjusts when engine valves open and close based on driving conditions",
+      "practicalBenefit": "Optimizes engine performance across different speeds, improving both power delivery and fuel efficiency",
+      "category": "mechanical",
+      "aliases": ["Variable Valve Timing"]
+    },
+    {
+      "term": "ABS",
+      "explanation": "Anti-lock Braking System - prevents wheels from locking up during hard braking",
+      "practicalBenefit": "Maintains steering control during emergency stops, especially on wet or slippery roads",
+      "category": "safety",
+      "aliases": ["Anti-lock Braking System"]
+    }
+  ]
+}
