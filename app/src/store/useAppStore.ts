@@ -10,6 +10,7 @@ interface FilterState {
   cylinders: number[];
   powerRange: [number | 'Any', number | 'Any'];
   inductions: string[];
+  features: string[];
 }
 
 interface AppState {
@@ -22,6 +23,7 @@ interface AppState {
   lastAddedVehicle: { id: string, image: string, x: number, y: number } | null;
   comparisonError: string | null;
   hasEnteredApp: boolean; // For splash screen
+  quizResults: Record<string, string> | null;
 
   fetchVehicles: () => Promise<void>;
   setSearchQuery: (query: string) => void;
@@ -35,6 +37,7 @@ interface AppState {
   setComparisonError: (error: string | null) => void;
   enterApp: () => void;
   resetApp: () => void;
+  setQuizResults: (results: Record<string, string> | null) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -52,12 +55,14 @@ export const useAppStore = create<AppState>()(
         cylinders: [],
         powerRange: ['Any', 'Any'],
         inductions: [],
+        features: [],
       },
       comparisonList: [],
       favorites: [],
       lastAddedVehicle: null,
       comparisonError: null,
       hasEnteredApp: false,
+      quizResults: null,
 
       fetchVehicles: async () => {
         set({ isLoading: true });
@@ -114,6 +119,7 @@ export const useAppStore = create<AppState>()(
           cylinders: [],
           powerRange: ['Any', 'Any'],
           inductions: [],
+          features: [],
         }
       }),
 
@@ -126,6 +132,8 @@ export const useAppStore = create<AppState>()(
       enterApp: () => set({ hasEnteredApp: true }),
 
       resetApp: () => set({ hasEnteredApp: false }),
+
+      setQuizResults: (results) => set({ quizResults: results }),
     }),
     {
       name: 'carspec-storage',
@@ -133,6 +141,7 @@ export const useAppStore = create<AppState>()(
         comparisonList: state.comparisonList,
         favorites: state.favorites,
         filters: state.filters,
+        quizResults: state.quizResults,
       }),
     }
   )

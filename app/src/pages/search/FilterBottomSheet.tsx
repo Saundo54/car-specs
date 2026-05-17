@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../../store/useAppStore';
 import { Chip } from '../../components/ui/Chip';
 import { Button } from '../../components/ui/Button';
+import { FeatureFilterChecklist } from '../../components/ui/FeatureFilterChecklist';
 import { SPRING_CONFIGS } from '../../constants/animations';
 import styles from './FilterBottomSheet.module.css';
 
@@ -157,6 +158,14 @@ export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({ isOpen, on
                     <Chip key={i} label={i} selected={filters.inductions.includes(i)} onClick={() => toggleArrayFilter('inductions', i)} />
                   ))}
                 </div>
+              </section>
+
+              <section className={styles.section}>
+                <FeatureFilterChecklist 
+                  selectedFeatures={filters.features}
+                  onFeatureToggle={(id) => toggleArrayFilter('features', id)}
+                  matchingCount={resultCount}
+                />
               </section>
             </div>
 

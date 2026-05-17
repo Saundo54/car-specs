@@ -12,6 +12,9 @@ import { SplashScreen } from './SplashScreen';
 import { Snackbar } from '../../components/ui/Snackbar';
 import { useInteractionOrigin } from '../../hooks/useInteractionOrigin';
 import { SPRING_CONFIGS, ACCORDION_TRANSITIONS } from '../../constants/animations';
+import { LifestyleQuiz } from '../../components/ui/LifestyleQuiz';
+import { QuizInfoModal } from '../../components/ui/QuizInfoModal';
+import { featureFilterService } from '../../services/FeatureFilterService';
 import styles from './SearchScreen.module.css';
 
 const brandLogos: Record<string, string> = {
@@ -41,13 +44,16 @@ export const SearchScreen: React.FC = () => {
     comparisonError,
     setComparisonError,
     hasEnteredApp,
-    resetApp
+    resetApp,
+    quizResults
   } = useAppStore();
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [expandedAlpha, setExpandedAlpha] = useState<string | null>(null);
   const [selectedMake, setSelectedMake] = useState<string | null>(null);
   const [expandedModelAlpha, setExpandedModelAlpha] = useState<string | null>(null);
   const [expandedModel, setExpandedModel] = useState<string | null>(null);
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
+  const [isQuizInfoOpen, setIsQuizInfoOpen] = useState(false);
 
   useEffect(() => {
     if (vehicles.length === 0) {
@@ -127,6 +133,12 @@ export const SearchScreen: React.FC = () => {
     if (filters.inductions.length > 0) {
         const match = filters.inductions.some((ind: string) => induction.toLowerCase().includes(ind.toLowerCase()));
         if (!match) return false;
+    }
+
+    // Feature filters (Requirement 6.3)
+    if (filters.features.length > 0) {
+      const hasAllFeatures = featureFilterService.filterVehicles([v], filters.features).length > 0;
+      if (!hasAllFeatures) return false;
     }
 
     return true;
@@ -227,6 +239,28 @@ export const SearchScreen: React.FC = () => {
       </div>
 
       <div className={styles.contentArea}>
+        {isQuizOpen ? (
+          <div className={styles.quizWrapper}>
+            <LifestyleQuiz 
+              onComplete={() => setIsQuizOpen(false)} 
+              onCancel={() => setIsQuizOpen(false)} 
+            />
+          </div>
+        ) : !selectedMake && (
+          <div className={styles.quizPromotion}>
+            <div className={styles.quizPromoText}>
+              <h3 className="title-medium">Find your perfect match</h3>
+              <p className="body-small secondary-text">Answer 3 questions to see recommended car types.</p>
+            </div>
+            <div className={styles.quizPromoActions}>
+              <button className={styles.quizInfoButton} onClick={() => setIsQuizInfoOpen(true)}>
+                <span className="material-symbols-outlined">help_outline</span>
+              </button>
+              <Button label={quizResults ? "Retake Quiz" : "Start Quiz"} variant="tonal" onClick={() => setIsQuizOpen(true)} />
+            </div>
+          </div>
+        )}
+
         <AnimatePresence mode="popLayout" initial={false} custom={selectedMake ? 1 : -1}>
           {filteredVehicles.length === 0 ? (
             <motion.div 
@@ -389,6 +423,8 @@ export const SearchScreen: React.FC = () => {
         isOpen={!!comparisonError} 
         onClose={() => setComparisonError(null)} 
       />
+
+      {isQuizInfoOpen && <QuizInfoModal onClose={() => setIsQuizInfoOpen(false)} />}
     </div>
   );
 };

@@ -1,0 +1,51 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background-color: var(--surface-container-low);
+  border-radius: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.featureButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background-color: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: 12px;
+  cursor: pointer;
+  position: relative;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.featureButton.selected {
+  background-color: var(--secondary-container);
+  border-color: var(--secondary);
+}
+
+.iconWrapper {
+  font-size: 20px;
+}
+
+.check {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 20px;
+  color: var(--primary);
+  background-color: var(--surface);
+  border-radius: 50%;
+}
+
+.footer {
+  text-align: center;
+}

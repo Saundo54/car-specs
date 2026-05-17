@@ -142,6 +142,45 @@
   gap: 4px;
 }
 
+.quizPromotion {
+  margin: 16px;
+  padding: 16px;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.quizPromoText {
+  flex: 1;
+}
+
+.quizPromoActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quizInfoButton {
+  background: none;
+  border: none;
+  color: var(--md-sys-color-on-primary-container);
+  cursor: pointer;
+  padding: 8px;
+  opacity: 0.7;
+}
+
+.quizInfoButton:hover {
+  opacity: 1;
+}
+
+.quizWrapper {
+  margin: 16px;
+}
+
 @media (min-width: 720px) {
   .brandGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));

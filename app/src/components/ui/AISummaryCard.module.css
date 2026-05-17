@@ -1,0 +1,86 @@
+.container {
+  margin: 16px;
+  background-color: var(--surface-container-high);
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid var(--outline-variant);
+  box-shadow: var(--shadow-small);
+}
+
+.header {
+  padding: 16px 20px;
+  background-color: var(--secondary-container);
+  color: var(--on-secondary-container);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.aiIcon {
+  font-size: 20px;
+}
+
+.betaBadge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-radius: 4px;
+}
+
+.content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tradeOffList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tradeOffItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aspectRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--primary);
+}
+
+.magnitude {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+.significant { background-color: var(--error-container); color: var(--on-error-container); }
+.moderate { background-color: var(--warning-container); color: var(--on-warning-container); }
+.minor { background-color: var(--secondary-container); color: var(--on-secondary-container); }
+
+.footer {
+  padding: 12px 20px;
+  background-color: var(--surface-container);
+  border-top: 1px solid var(--outline-variant);
+}
