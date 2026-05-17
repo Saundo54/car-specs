@@ -1,5 +1,6 @@
-import { VehicleSpec } from '../data/vehicles';
-import { FEATURE_FILTER_CONFIG, FilterableFeature } from '../data/featureFilters';
+import type { VehicleSpec } from '../data/vehicles';
+import { FEATURE_FILTER_CONFIG } from '../data/featureFilters';
+import type { FilterableFeature } from '../data/featureFilters';
 
 /**
  * FeatureFilterService

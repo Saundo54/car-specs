@@ -1,11 +1,13 @@
-import { 
-  BootHeuristicData, 
-  LuggageEquivalent, 
-  ConversionRatio, 
-  BabyDriveEntry, 
-  STANDARD_LUGGAGE_VOLUMES, 
+import {
+  STANDARD_LUGGAGE_VOLUMES,
   DEFAULT_METHODOLOGY,
-  HeuristicMethodology
+} from '../types/bootHeuristic';
+import type {
+  BootHeuristicData,
+  LuggageEquivalent,
+  ConversionRatio,
+  BabyDriveEntry,
+  HeuristicMethodology,
 } from '../types/bootHeuristic';
 
 class BootHeuristicService {
@@ -25,10 +27,10 @@ class BootHeuristicService {
    * Identifies vehicles present in both the application database and the BabyDrive_Database
    * Requirement: 9.1
    */
-  matchVehicleToBabyDrive(vehicleId: string): BabyDriveEntry | null {
+  matchVehicleToBabyDrive(_vehicleId: string): BabyDriveEntry | null {
     // Mock implementation: in a real app this would look up in a data source
     // For now, we return null to fall back to industry standards
-    return null; 
+    return null;
   }
 
   /**

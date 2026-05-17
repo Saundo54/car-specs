@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { glossaryManager } from '../../services/GlossaryManager';
 import styles from './TermTooltip.module.css';
 
@@ -13,7 +13,7 @@ interface TermTooltipProps {
 
 export const TermTooltip: React.FC<TermTooltipProps> = ({ term, children }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const entry = glossaryManager.getEntry(term);
 
   if (!entry) return <>{children}</>;

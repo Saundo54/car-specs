@@ -1,4 +1,4 @@
-import { VehicleSpec } from '../data/vehicles';
+import type { VehicleSpec } from '../data/vehicles';
 
 /**
  * Trade-off data structure for AI summaries

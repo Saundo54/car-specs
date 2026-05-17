@@ -1,6 +1,6 @@
 import React from 'react';
 import { aiService } from '../../services/AIService';
-import { VehicleSpec } from '../../data/vehicles';
+import type { VehicleSpec } from '../../data/vehicles';
 import styles from './AISummaryCard.module.css';
 
 /**

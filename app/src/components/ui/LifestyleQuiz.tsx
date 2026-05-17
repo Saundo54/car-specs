@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { QUIZ_QUESTIONS, getRecommendedBodyTypes } from '../../data/lifestyleQuiz';
+import { QUIZ_QUESTIONS } from '../../data/lifestyleQuiz';
 import { useAppStore } from '../../store/useAppStore';
 import { QuizInfoModal } from './QuizInfoModal';
 import styles from './LifestyleQuiz.module.css';

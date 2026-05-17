@@ -1,4 +1,4 @@
-import { GlossaryData, GlossaryEntry } from '../types/glossary';
+import type { GlossaryData, GlossaryEntry } from '../types/glossary';
 
 class GlossaryManager {
   private data: GlossaryData | null = null;
