@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { QUIZ_QUESTIONS } from '../../data/lifestyleQuiz';
 import { useAppStore } from '../../store/useAppStore';
+import { Button } from './Button';
+import { IconButton } from './IconButton';
 import { QuizInfoModal } from './QuizInfoModal';
 import styles from './LifestyleQuiz.module.css';
 
@@ -46,16 +48,16 @@ export const LifestyleQuiz: React.FC<LifestyleQuizProps> = ({ onComplete, onCanc
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div className={styles.progress}>
-          <div className={styles.progressBar} style={{ width: progress }} />
+        <div className={styles.progressContainer}>
+          <div className={styles.progressLabel}>Question {currentStep + 1} of {QUIZ_QUESTIONS.length}</div>
+          <div className={styles.progress}>
+            <div className={styles.progressBar} style={{ width: progress }} />
+          </div>
         </div>
+
         <div className={styles.headerActions}>
-          <button className={styles.infoButton} onClick={() => setShowInfo(true)} title="How it works">
-            <span className="material-symbols-outlined">help_outline</span>
-          </button>
-          <button className={styles.closeButton} onClick={onCancel}>
-            <span className="material-symbols-outlined">close</span>
-          </button>
+          <IconButton icon="help_outline" onClick={() => setShowInfo(true)} variant="tonal" />
+          <IconButton icon="close" onClick={onCancel} variant="standard" />
         </div>
       </div>
 
@@ -66,7 +68,7 @@ export const LifestyleQuiz: React.FC<LifestyleQuizProps> = ({ onComplete, onCanc
             <button
               key={option.value}
               type="button"
-              className={`${styles.option} ${selectedAnswer === option.value ? styles.selected : ''}`}
+              className={`${styles.optionButton} ${selectedAnswer === option.value ? styles.selected : ''}`}
               onClick={() => handleAnswer(option.value)}
             >
               {option.label}
@@ -76,15 +78,15 @@ export const LifestyleQuiz: React.FC<LifestyleQuizProps> = ({ onComplete, onCanc
 
         <div className={styles.actions}>
           {currentStep > 0 && (
-            <button className={styles.backButton} onClick={handleBack} type="button">
-              <span className="material-symbols-outlined">arrow_back</span>
-              <span className="label-medium">Back</span>
-            </button>
+            <Button label="Back" variant="outlined" icon="arrow_back" onClick={handleBack} />
           )}
 
-          <button className={styles.nextButton} onClick={handleNext} type="button" disabled={!selectedAnswer}>
-            {currentStep === QUIZ_QUESTIONS.length - 1 ? 'Finish' : 'Next'}
-          </button>
+          <Button
+            label={currentStep === QUIZ_QUESTIONS.length - 1 ? 'Finish' : 'Next'}
+            variant="filled"
+            onClick={handleNext}
+            disabled={!selectedAnswer}
+          />
         </div>
       </div>
 

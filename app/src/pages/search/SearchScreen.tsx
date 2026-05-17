@@ -37,7 +37,7 @@ export const SearchScreen: React.FC = () => {
     fetchVehicles, 
     searchQuery, 
     setSearchQuery, 
-    filters, 
+    filters: persistedFilters, 
     addToComparison, 
     comparisonList,
     clearFilters,
@@ -47,6 +47,33 @@ export const SearchScreen: React.FC = () => {
     resetApp,
     quizResults
   } = useAppStore();
+
+  const defaultFilters = {
+    bodyTypes: [],
+    fuelTypes: [],
+    yearRange: [2018, 2026] as [number, number],
+    transmissions: [],
+    driveTypes: [],
+    cylinders: [] as number[],
+    powerRange: ['Any', 'Any'] as [number | 'Any', number | 'Any'],
+    inductions: [],
+    features: [],
+  };
+
+  const filters = {
+    bodyTypes: persistedFilters?.bodyTypes ?? defaultFilters.bodyTypes,
+    fuelTypes: persistedFilters?.fuelTypes ?? defaultFilters.fuelTypes,
+    yearRange: persistedFilters?.yearRange ?? defaultFilters.yearRange,
+    transmissions: persistedFilters?.transmissions ?? defaultFilters.transmissions,
+    driveTypes: persistedFilters?.driveTypes ?? defaultFilters.driveTypes,
+    cylinders: persistedFilters?.cylinders ?? defaultFilters.cylinders,
+    powerRange: persistedFilters?.powerRange ?? defaultFilters.powerRange,
+    inductions: persistedFilters?.inductions ?? defaultFilters.inductions,
+    features: persistedFilters?.features ?? defaultFilters.features,
+  };
+
+  const searchQuerySafe = searchQuery ?? '';
+
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [expandedAlpha, setExpandedAlpha] = useState<string | null>(null);
   const [selectedMake, setSelectedMake] = useState<string | null>(null);
@@ -79,10 +106,11 @@ export const SearchScreen: React.FC = () => {
     const mech = v.specs?.mechanical || {};
 
     // Basic search matches
+    const query = searchQuerySafe.toLowerCase();
     const matchesSearch = 
-      v.make.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      v.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      v.year.toString().includes(searchQuery);
+      (v.make || '').toLowerCase().includes(query) ||
+      (v.model || '').toLowerCase().includes(query) ||
+      (v.year?.toString() || '').includes(searchQuerySafe);
     if (!matchesSearch) return false;
 
     // Year range
@@ -211,7 +239,7 @@ export const SearchScreen: React.FC = () => {
           <input 
             type="text" 
             placeholder="Search make, model, year..." 
-            value={searchQuery}
+            value={searchQuerySafe}
             onChange={(e) => {
               setSearchQuery(e.target.value);
               setSelectedMake(null);

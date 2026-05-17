@@ -11,7 +11,20 @@
 .header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
+}
+
+.progressContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.progressLabel {
+  font-size: 0.95rem;
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 .headerActions {
@@ -20,26 +33,10 @@
   gap: 8px;
 }
 
-.infoButton {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--on-surface-variant);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.7;
-}
-
-.infoButton:hover {
-  opacity: 1;
-}
-
 .progress {
-  flex: 1;
-  height: 4px;
+  height: 6px;
   background-color: var(--surface-container-highest);
-  border-radius: 2px;
+  border-radius: 999px;
   overflow: hidden;
 }
 
@@ -106,4 +103,29 @@
   cursor: pointer;
   color: var(--primary);
   width: fit-content;
+}
+
+.question {
+  font-size: 1.25rem;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.optionButton.selected {
+  background-color: var(--md-sys-color-primary-container);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.optionButton.selected:hover {
+  background-color: var(--md-sys-color-primary-container);
 }

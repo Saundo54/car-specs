@@ -10,7 +10,7 @@ import { BootVisualizer } from '../../components/ui/BootVisualizer';
 import { MethodologyModal } from '../../components/ui/MethodologyModal';
 import { TermTooltip } from '../../components/ui/TermTooltip';
 import { ANCAPContextDisplay } from '../../components/ui/ANCAPContextDisplay';
-import { AISummaryCard } from '../../components/ui/AISummaryCard';
+import { AIInsightsModal } from '../../components/ui/AIInsightsModal';
 import { glossaryManager } from '../../services/GlossaryManager';
 import styles from './ComparisonScreen.module.css';
 
@@ -19,9 +19,9 @@ export const ComparisonScreen: React.FC = () => {
 // ... (omitting state for brevity in instruction, will provide full in new_string)
   const [showDifferencesOnly, setShowDifferencesOnly] = useState(false);
   const [activeTab, setActiveTab] = useState('mechanical');
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [showLegend, setShowLegend] = useState(false);
   const [showMethodology, setShowMethodology] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
 
   const comparedVehicles = vehicles
     .filter(v => comparisonList.includes(v.id))
@@ -62,29 +62,6 @@ export const ComparisonScreen: React.FC = () => {
     { id: 'tech', label: 'Tech' },
     { id: 'interior', label: 'Interior' },
   ];
-
-  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    setTouchStartX(event.clientX);
-  };
-
-  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (touchStartX === null) return;
-    const deltaX = event.clientX - touchStartX;
-    setTouchStartX(null);
-
-    const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
-    if (Math.abs(deltaX) < 60) return;
-    if (deltaX < 0 && currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1].id);
-    }
-    if (deltaX > 0 && currentIndex > 0) {
-      setActiveTab(tabs[currentIndex - 1].id);
-    }
-  };
-
-  const handlePointerCancel = () => {
-    setTouchStartX(null);
-  };
 
   const hasDifference = (category: string, key: string) => {
     if (comparedVehicles.length < 2) return false;
@@ -151,6 +128,13 @@ export const ComparisonScreen: React.FC = () => {
         title="Compare"
         actions={
           <div className={styles.topActions}>
+            <Button
+              label="Automated Insights"
+              variant="tonal"
+              icon="auto_awesome"
+              onClick={() => setShowInsights(true)}
+              disabled={comparedVehicles.length < 2}
+            />
             <button className={styles.infoButton} onClick={() => setShowLegend(!showLegend)}>
               <span className="material-symbols-outlined">info</span>
             </button>
@@ -158,6 +142,12 @@ export const ComparisonScreen: React.FC = () => {
           </div>
         }
       />
+      {showInsights && (
+        <AIInsightsModal
+          vehicles={comparedVehicles}
+          onClose={() => setShowInsights(false)}
+        />
+      )}
 
       <div className={styles.stickyControls}>
         <div className={styles.tabsContainer}>
@@ -203,8 +193,7 @@ export const ComparisonScreen: React.FC = () => {
         </div>
       )}
 
-      <div className={styles.tableWrapper} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onPointerCancel={handlePointerCancel}>
-        <AISummaryCard vehicles={comparedVehicles} />
+      <div className={styles.tableWrapper}>
         <div className={styles.grid}>
           {/* Header Row */}
           <div className={styles.stickyHeaderRow}>

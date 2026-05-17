@@ -1,0 +1,129 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 120;
+}
+
+.modal {
+  width: min(100%, 560px);
+  background-color: var(--md-sys-color-surface);
+  border-radius: 24px;
+  box-shadow: var(--shadow-large);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--md-sys-color-outline);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon {
+  font-size: 28px;
+  color: var(--md-sys-color-primary);
+}
+
+.closeButton {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.closeButton:hover {
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+.content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.summary {
+  background-color: var(--md-sys-color-surface-container-high);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.tradeOffs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tradeOffList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tradeOffItem {
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--md-sys-color-outline);
+  background-color: var(--md-sys-color-surface-container-low);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tradeOffHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--md-sys-color-primary);
+}
+
+.magnitude {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.magnitude.high {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.magnitude.medium {
+  background-color: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.magnitude.low {
+  background-color: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.footer {
+  padding-top: 8px;
+  border-top: 1px solid var(--md-sys-color-outline);
+}
